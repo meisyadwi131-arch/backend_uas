@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAS Online Store</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; }
+        header { background: #333; color: #fff; padding: 1rem; text-align: center; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+        .card { background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card img { max-width: 100%; border-radius: 4px; }
+        .card h3 { margin: 0.5rem 0; }
+        .price { color: #e74c3c; font-weight: bold; font-size: 1.2rem; }
+        .btn { background: #3498db; color: #fff; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; width: 100%; margin-top: 1rem; }
+        .btn:hover { background: #2980b9; }
+        #cart { position: fixed; top: 1rem; right: 1rem; background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>UAS Store</h1>
+        <p><a href="admin.html" style="color: white; text-decoration: none;">Go to Admin Dashboard</a></p>
+        <button onclick="toggleCart()" style="position: absolute; right: 2rem; top: 1.5rem;">Cart (<span id="cart-count">0</span>)</button>
+    </header>
+
+    <div id="cart">
+        <h3>Shopping Cart</h3>
+        <ul id="cart-items"></ul>
+        <p>Total: Rp <span id="cart-total">0</span></p>
+        <input type="text" id="custName" placeholder="Your Name" style="width: 100%; margin-bottom: 0.5rem;">
+        <input type="text" id="custPhone" placeholder="Your Phone (e.g., 0812...)" style="width: 100%; margin-bottom: 0.5rem;">
+        <button class="btn" onclick="checkout()">Checkout (WA)</button>
+    </div>
+
+    <div class="container">
+        <h2>Our Products</h2>
+        <div class="grid" id="product-list">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let cart = [];
+        let products = [];
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch(`${API_URL}/products`);
+                const data = await response.json();
+                if (data.success) {
+                    products = data.data;
+                    renderProducts();
+                }
+            } catch (err) {
+                console.error('Failed to load products', err);
+            }
+        }
+
+        function renderProducts() {
+            const list = document.getElementById('product-list');
+            list.innerHTML = '';
+            products.forEach(p => {
+                list.innerHTML += `
+                    <div class="card">
+                        <img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}">
+                        <h3>${p.name}</h3>
+                        <p>${p.description}</p>
+                        <p class="price">Rp ${p.price}</p>
+                        <button class="btn" onclick="addToCart(${p.id})">Add to Cart</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(item => item.product_id === id);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ product_id: id, name: product.name, price: product.price, quantity: 1 });
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').innerText = count;
+            const itemsList = document.getElementById('cart-items');
+            itemsList.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                itemsList.innerHTML += `<li>${item.name} x${item.quantity} = Rp ${item.price * item.quantity}</li>`;
+            });
+            document.getElementById('cart-total').innerText = total;
+        }
+
+        function toggleCart() {
+            const cartEl = document.getElementById('cart');
+            cartEl.style.display = cartEl.style.display === 'block' ? 'none' : 'block';
+        }
+
+        async function checkout() {
+            if (cart.length === 0) return alert('Cart is empty!');
+            const name = document.getElementById('custName').value;
+            const phone = document.getElementById('custPhone').value;
+            if (!name || !phone) return alert('Name and phone are required!');
+
+            try {
+                const response = await fetch(`${API_URL}/checkout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ customer_name: name, customer_phone: phone, items: cart })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Order placed successfully! Redirecting to WhatsApp...');
+                    cart = [];
+                    updateCartUI();
+                    toggleCart();
+                    window.open(data.data.waLink, '_blank');
+                } else {
+                    alert('Checkout failed: ' + data.message);
+                }
+            } catch (err) {
+                alert('Checkout failed, check console for details.');
+                console.error(err);
+            }
+        }
+
+        fetchProducts();
+    </script>
+</body>
+</html>
