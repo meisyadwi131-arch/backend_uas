@@ -70,3 +70,14 @@ exports.login = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+
+exports.setupAdmin = async (req, res) => {
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash('admin123', salt);
+        await db.query('UPDATE users SET password = ? WHERE username = ?', [hashedPassword, 'admin']);
+        res.status(200).json({ success: true, message: 'Admin password reset to admin123' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
