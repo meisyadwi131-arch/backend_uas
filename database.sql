@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Dumping data for categories
-INSERT INTO `categories` (`id`, `name`) VALUES
+INSERT IGNORE INTO `categories` (`id`, `name`) VALUES
 (1, 'Electronics'),
 (2, 'Clothing'),
 (3, 'Food & Beverage');
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Dumping data for products
-INSERT INTO `products` (`id`, `name`, `description`, `price`, `stock`, `image_url`, `category_id`) VALUES
+INSERT IGNORE INTO `products` (`id`, `name`, `description`, `price`, `stock`, `image_url`, `category_id`) VALUES
 (1, 'Laptop Gaming ASUS', 'High performance gaming laptop', 15000000.00, 10, 'https://via.placeholder.com/300', 1),
 (2, 'T-Shirt Polos', 'Cotton combed 30s', 50000.00, 100, 'https://via.placeholder.com/300', 2);
 
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Dumping data for users
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`) VALUES
+INSERT IGNORE INTO `users` (`id`, `username`, `email`, `password`, `role`) VALUES
 (1, 'admin', 'admin@store.com', '$2a$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'admin');
 
 -- Table structure for orders
