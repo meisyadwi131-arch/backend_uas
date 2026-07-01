@@ -58,3 +58,18 @@ CREATE TABLE IF NOT EXISTS `order_items` (
   FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table structure for users
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL UNIQUE,
+  `email` varchar(100) NOT NULL UNIQUE,
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','customer') DEFAULT 'customer',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Dumping data for users
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`) VALUES
+(1, 'admin', 'admin@store.com', 'admin123', 'admin');

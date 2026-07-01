@@ -14,11 +14,13 @@ app.use(express.urlencoded({ extended: true }));
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 // Mount Routes
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/users', userRoutes);
 
 // Root Endpoint
 app.get('/', (req, res) => {
