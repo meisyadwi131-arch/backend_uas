@@ -30,6 +30,18 @@ async function initDB() {
         } else {
             console.log('Database tables already exist. Skipping initialization.');
         }
+
+        // Apply migrations
+        try {
+            console.log('Running schema migrations...');
+            await db.query('ALTER TABLE products MODIFY COLUMN image_url LONGTEXT');
+            const img1 = 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=500&q=80';
+            const img2 = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80';
+            await db.query('UPDATE products SET image_url = ? WHERE id = 1 AND image_url LIKE "%placeholder%"', [img1]);
+            await db.query('UPDATE products SET image_url = ? WHERE id = 2 AND image_url LIKE "%placeholder%"', [img2]);
+        } catch(e) {
+            console.log('Migration note:', e.message);
+        }
     } catch (error) {
         console.error('Error initializing database:', error);
     }
