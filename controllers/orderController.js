@@ -24,8 +24,8 @@ exports.checkout = async (req, res) => {
         
         // Insert Order
         const [orderResult] = await connection.query(
-            'INSERT INTO orders (customer_name, customer_phone, total_amount, status) VALUES (?, ?, ?, ?)',
-            [customer_name, customer_phone, total_amount, 'pending']
+            'INSERT INTO orders (customer_name, customer_phone, total_amount, status, user_id) VALUES (?, ?, ?, ?, ?)',
+            [customer_name, customer_phone, total_amount, 'pending', user_id || null]
         );
         const orderId = orderResult.insertId;
         
@@ -64,6 +64,16 @@ exports.checkout = async (req, res) => {
 exports.getAllOrders = async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM orders ORDER BY created_at DESC');
+        res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.getMyOrders = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const [rows] = await db.query('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC', [userId]);
         res.status(200).json({ success: true, data: rows });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

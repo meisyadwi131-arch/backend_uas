@@ -39,12 +39,14 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `stock`, `image_ur
 -- Table structure for orders
 CREATE TABLE IF NOT EXISTS `orders` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `customer_name` varchar(255) NOT NULL,
   `customer_phone` varchar(50) NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
   `status` enum('pending','completed','cancelled') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table structure for order_items
@@ -72,4 +74,4 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- Dumping data for users
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`) VALUES
-(1, 'admin', 'admin@store.com', 'admin123', 'admin');
+(1, 'admin', 'admin@store.com', '$2a$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'admin');
