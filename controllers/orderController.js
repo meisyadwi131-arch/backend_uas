@@ -4,7 +4,7 @@ exports.checkout = async (req, res) => {
     const connection = await db.getConnection();
     try {
         await connection.beginTransaction();
-        const { customer_name, customer_phone, items } = req.body;
+        const { customer_name, customer_phone, items, user_id } = req.body;
         
         let total_amount = 0;
         let order_details_text = `*New Order from ${customer_name}*\n`;
@@ -43,7 +43,7 @@ exports.checkout = async (req, res) => {
         await connection.commit();
         
         // Generate WhatsApp link (Owner phone hardcoded or from env)
-        const ownerPhone = process.env.OWNER_PHONE || '6281234567890';
+        const ownerPhone = process.env.OWNER_PHONE || '6281574986965';
         const encodedMessage = encodeURIComponent(order_details_text);
         const waLink = `https://wa.me/${ownerPhone}?text=${encodedMessage}`;
         
