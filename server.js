@@ -31,6 +31,9 @@ app.get('/', (req, res) => {
 // The logic will be handled inside orderRoutes, but for clarity:
 app.use('/api/checkout', orderRoutes); 
 
-app.listen(PORT, () => {
+const initDB = require('./initDB');
+
+app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}.`);
+    await initDB();
 });

@@ -2,10 +2,11 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 // Create connection pool
-// Railway typically provides a connection string via MYSQL_URL or similar, 
-// but we'll support both options for flexibility.
+// Railway provides MYSQL_URL or DATABASE_URL
+const connectionString = process.env.MYSQL_URL || process.env.DATABASE_URL || process.env.RAILWAY_MYSQL_URL;
+
 const pool = mysql.createPool(
-    process.env.RAILWAY_MYSQL_URL || {
+    connectionString || {
         host: process.env.DB_HOST || 'localhost',
         user: process.env.DB_USER || 'root',
         password: process.env.DB_PASSWORD || '',
