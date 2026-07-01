@@ -5,7 +5,7 @@ const db = require('./config/db');
 async function initDB() {
     try {
         console.log('Checking database tables...');
-        const [rows] = await db.query("SHOW TABLES LIKE 'products'");
+        const [rows] = await db.query("SHOW TABLES LIKE 'users'");
         
         if (rows.length === 0) {
             console.log('Tables not found. Initializing database from database.sql...');
